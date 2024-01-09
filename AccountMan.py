@@ -5,8 +5,7 @@ import datetime
 import random
 class AccountManager:
 
-    def __init__(self, account_number: str, owner: str, balance: int):
-        self.account_number = account_number
+    def __init__(self, owner: str, balance: int):
         self.owner = owner
         self.balance = balance
         self.path = self.owner+'/'
@@ -131,16 +130,30 @@ class AccountManager:
         with open(self.path+'category.csv', "r", encoding="utf-8") as file1:
             glasses = csv.DictReader(file1)
             data = list(glasses)
-        lst = sorted(set([i["date"][:-3] for i in data]))
+        for i in data:
+            i["date"] = i["date"][:-3]
+        lst = sorted(set([i["date"] for i in data]))
         categ = sorted(set([i["category"] for i in data]))
         string = ""
         string += f"{'category':18}"+"".join(f"{i:18}" for i in lst)
         string += "\n"
+        print(lst)
+        print(data)
+        def dictionator(category):
+            dicn = {category:{}}
+            for i in data:
+                if category in i.values():
+                    if i["date"] not in dicn[category]:
+                        dicn[category].update({i['date']:int(i['amount'])})
+                    else:
+                        dicn[category][i["date"]] += int(i['amount'])
+            return dicn
         for i in categ:
             string += f"{i:18}"
-            for j in data:
-                if i in j.values():
-                    string += f"{j['amount']:18}"
+            dicn = dictionator(i)
+            for j in lst:
+                if j in dicn[i]:
+                    string += f"{str(dicn[i][j]):18}"
                 else:
                     string += f"{'-':18}"
             string += "\n"
