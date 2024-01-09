@@ -3,15 +3,16 @@ import csv
 import os
 import datetime
 import random
-class AccountManager:
 
+
+class AccountManager:
+    '''Account Manager Class'''
     def __init__(self, owner: str, balance: int):
         self.owner = owner
         self.balance = balance
-        self.path = self.owner+'/'
-    
+        self.path = self.owner + "/"
 
-    def get_balance(self,file):
+    def get_balance(self, file):
         """retrieves balance from ledger or sets it to 100000 if no ledger"""
         if os.path.isfile(file):
             with open(file, "r", encoding="utf-8") as file_:
@@ -21,22 +22,19 @@ class AccountManager:
 
         return self.balance
 
-
-    def cred(self,amount):
+    def cred(self, amount):
         """Credits amount to balance"""
-        balance = self.get_balance(self.path+"ledger.csv")
+        balance = self.get_balance(self.path + "ledger.csv")
         balance = int(balance) + amount
         return balance
 
-
-    def debit(self,amount):
+    def debit(self, amount):
         """Debits amount from balance"""
-        balance = self.get_balance(self.path+"ledger.csv")
+        balance = self.get_balance(self.path + "ledger.csv")
         balance = int(balance) - amount
         return balance
 
-
-    def transaction(self,credit=False, **kwargs):
+    def transaction(self, credit=False, **kwargs):
         """Performs a transaction"""
         if credit:
             balance = self.cred(kwargs["amount"])
@@ -49,8 +47,7 @@ class AccountManager:
         self.print_report()
         return balance
 
-
-    def ledger(self,trans: dict, credit):
+    def ledger(self, trans: dict, credit):
         """Store transaction data in ledger.csv file"""
         os.makedirs(self.path, exist_ok=True)
         if credit:
@@ -66,9 +63,11 @@ class AccountManager:
             "mode_of_payment": trans["mode_of_payment"],
         }
 
-        file_exists = os.path.isfile(self.path+"ledger.csv")
+        file_exists = os.path.isfile(self.path + "ledger.csv")
 
-        with open(self.path+"ledger.csv", "a", encoding="utf-8", newline="") as ledger_file:
+        with open(
+            self.path + "ledger.csv", "a", encoding="utf-8", newline=""
+        ) as ledger_file:
             csvwriter = csv.DictWriter(ledger_file, fieldnames=data.keys())
 
             if not file_exists:
@@ -76,8 +75,7 @@ class AccountManager:
 
             csvwriter.writerow(data)
 
-
-    def category_(self,trans: dict, credit):
+    def category_(self, trans: dict, credit):
         """Store transaction data in csv file wrt category"""
         if credit:
             cr = "+"
@@ -87,11 +85,13 @@ class AccountManager:
             "date": trans["date"],
             "category": trans["category"],
             "desc": trans["desc"],
-            "amount": f"{cr}{trans['amount']}"
+            "amount": f"{cr}{trans['amount']}",
         }
-        file_exists = os.path.isfile(self.path+"category"+ ".csv")
+        file_exists = os.path.isfile(self.path + "category" + ".csv")
 
-        with open(self.path+"category" + ".csv", "a", encoding="utf-8", newline="") as cate:
+        with open(
+            self.path + "category" + ".csv", "a", encoding="utf-8", newline=""
+        ) as cate:
             csvwriter = csv.DictWriter(cate, fieldnames=data.keys())
 
             if not file_exists:
@@ -99,8 +99,7 @@ class AccountManager:
 
             csvwriter.writerow(data)
 
-
-    def payment(self,trans: dict, credit):
+    def payment(self, trans: dict, credit):
         """Store transaction data in csv file wrt mode_of_payment"""
         if credit:
             cr = "+"
@@ -112,10 +111,10 @@ class AccountManager:
             "amount": f"{cr}{trans['amount']}",
             "desc": trans["desc"],
         }
-        file_exists = os.path.isfile(self.path+"mode_of_payment" + ".csv")
+        file_exists = os.path.isfile(self.path + "mode_of_payment" + ".csv")
 
         with open(
-            self.path+"mode_of_payment" + ".csv", "a", encoding="utf-8", newline=""
+            self.path + "mode_of_payment" + ".csv", "a", encoding="utf-8", newline=""
         ) as moolah:
             csvwriter = csv.DictWriter(moolah, fieldnames=data.keys())
 
@@ -124,30 +123,31 @@ class AccountManager:
 
             csvwriter.writerow(data)
 
-
     def print_report(self):
         """creates a report and prints it in passbook format"""
-        with open(self.path+'category.csv', "r", encoding="utf-8") as file1:
+        with open(self.path + "category.csv", "r", encoding="utf-8") as file1:
             glasses = csv.DictReader(file1)
             data = list(glasses)
         for i in data:
             i["date"] = i["date"][:-3]
-        lst = sorted(set([i["date"] for i in data]))
-        categ = sorted(set([i["category"] for i in data]))
+        lst = sorted(set(i["date"] for i in data))
+        categ = sorted(set(i["category"] for i in data))
         string = ""
-        string += f"{'category':18}"+"".join(f"{i:18}" for i in lst)
+        string += f"{'category':18}" + "".join(f"{i:18}" for i in lst)
         string += "\n"
         print(lst)
         print(data)
+
         def dictionator(category):
-            dicn = {category:{}}
+            dicn = {category: {}}
             for i in data:
                 if category in i.values():
                     if i["date"] not in dicn[category]:
-                        dicn[category].update({i['date']:int(i['amount'])})
+                        dicn[category].update({i["date"]: int(i["amount"])})
                     else:
-                        dicn[category][i["date"]] += int(i['amount'])
+                        dicn[category][i["date"]] += int(i["amount"])
             return dicn
+
         for i in categ:
             string += f"{i:18}"
             dicn = dictionator(i)
@@ -160,11 +160,10 @@ class AccountManager:
         print(string)
         self.store_report(string)
 
-    def store_report(self,string):
+    def store_report(self, string):
         """stores the report in a text file"""
-        with open(self.path+"report.txt", "w", encoding="utf-8") as output:
+        with open(self.path + "report.txt", "w", encoding="utf-8") as output:
             output.write(string)
-
 
     def random_data(self):
         """gets 10 random datas and performs transactions with those datas"""
@@ -178,7 +177,7 @@ class AccountManager:
                 "Burger",
                 "Noodles",
                 "Sushi",
-                "Waffles"
+                "Waffles",
             ],
             "Travel": [900, "Bus", "Train", "Rickshaw", "Taxi"],
             "Entertainment": [600, "Movie", "Turf", "Bowling", "Swimming"],
@@ -187,15 +186,12 @@ class AccountManager:
         pay = ["UPI", "Card", "Bank_Transfer"]
 
         for _ in range(10):
-            year = random.choice(range(2018,2024))
+            year = random.choice(range(2018, 2024))
             month = random.choice(range(1, 13))
             day = random.choice(range(1, 29))
             input_d = datetime.date(year, month, day)
             category = random.choice(list(categ.keys())[1:])
-            if category == 'Credit':
-                credit = True
-            else:
-                credit = False
+            credit = category == "Credit"
             desc = random.choice(categ[category][1:])
             amount = random.choice(range(categ[category][0]))
             mode_of_payment = random.choice(pay)
@@ -205,8 +201,5 @@ class AccountManager:
                 amount=amount,
                 category=category,
                 desc=desc,
-                mode_of_payment=mode_of_payment
+                mode_of_payment=mode_of_payment,
             )
-
-
-

@@ -1,4 +1,4 @@
-from AccountMan import AccountManager
+from accountman import AccountManager
 
 account1 = AccountManager("Bruce",1000000000)
 account2 = AccountManager("Jason",20000)
