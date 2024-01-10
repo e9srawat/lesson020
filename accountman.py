@@ -6,7 +6,8 @@ import random
 
 
 class AccountManager:
-    '''Account Manager Class'''
+    """Account Manager Class"""
+
     def __init__(self, owner: str, balance: int):
         self.owner = owner
         self.balance = balance
@@ -135,8 +136,6 @@ class AccountManager:
         string = ""
         string += f"{'category':18}" + "".join(f"{i:18}" for i in lst)
         string += "\n"
-        print(lst)
-        print(data)
 
         def dictionator(category):
             dicn = {category: {}}
